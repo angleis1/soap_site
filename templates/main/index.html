@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h1 class="text-center mb-5">Актуальные мастер-классы</h1>
+
+{% if home_masterclasses_data %}
+<div class="carousel-container">
+    <div class="carousel-track">
+        {% for item in home_masterclasses_data %}
+            {% with mc=item.masterclass %}
+            <div class="carousel-card" data-href="{% url 'masterclass_detail' mc.id %}">
+                {% with first_image=mc.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ mc.name }}">
+                    {% else %}
+                        <img src="{% static 'images/no-image.jpg' %}" alt="Нет фото">
+                    {% endif %}
+                {% endwith %}
+                <div class="card-body">
+                    <h5>{{ mc.name }}</h5>
+                    <!-- Аватар мастера + имя мелким шрифтом -->
+                    <div class="master-block">
+                        <img src="{{ item.master_avatar }}" alt="{{ item.master_fio }}" class="master-mini-avatar">
+                        <span>{{ item.master_fio }}</span>
+                    </div>
+                    <p class="price">{{ mc.price }} ₽</p>
+                </div>
+                <div class="card-overlay">
+                    <h5>{{ mc.name }}</h5>
+                    <p>{{ mc.description|truncatechars:100 }}</p>
+                    <p>Мастер: {{ item.master_fio }}</p>
+                    <!-- Отображение даты/дат -->
+                    {% if item.first_session %}
+                        <p>Дата: {{ item.first_session.date_event|date:"d.m.Y" }} {{ item.first_session.time_event|time:"H:i" }}</p>
+                        {% if item.sessions_count > 1 %}
+                            <p><small>и ещё {{ item.sessions_count|add:"-1" }} {{ item.sessions_count|add:"-1"|pluralize:"дата,даты" }}</small></p>
+                        {% endif %}
+                    {% else %}
+                        <p>Дата уточняется</p>
+                    {% endif %}
+                    <p>Цена: {{ mc.price }} ₽</p>
+                    <a href="{% url 'masterclass_detail' mc.id %}" class="btn btn-primary btn-sm">Подробнее</a>
+                </div>
+            </div>
+            {% endwith %}
+        {% endfor %}
+        <!-- Дублируем карточки для бесконечной прокрутки -->
+        {% for item in home_masterclasses_data %}
+            {% with mc=item.masterclass %}
+            <div class="carousel-card" data-href="{% url 'masterclass_detail' mc.id %}">
+                {% with first_image=mc.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" alt="{{ mc.name }}">
+                    {% else %}
+                        <img src="{% static 'images/no-image.jpg' %}" alt="Нет фото">
+                    {% endif %}
+                {% endwith %}
+                <div class="card-body">
+                    <h5>{{ mc.name }}</h5>
+                    <div class="master-block">
+                        <img src="{{ item.master_avatar }}" alt="{{ item.master_fio }}" class="master-mini-avatar">
+                        <span>{{ item.master_fio }}</span>
+                    </div>
+                    <p class="price">{{ mc.price }} ₽</p>
+                </div>
+                <div class="card-overlay">
+                    <h5>{{ mc.name }}</h5>
+                    <p>{{ mc.description|truncatechars:100 }}</p>
+                    <p>Мастер: {{ item.master_fio }}</p>
+                    {% if item.first_session %}
+                        <p>Дата: {{ item.first_session.date_event|date:"d.m.Y" }} {{ item.first_session.time_event|time:"H:i" }}</p>
+                        {% if item.sessions_count > 1 %}
+                            <p><small>и ещё {{ item.sessions_count|add:"-1" }} {{ item.sessions_count|add:"-1"|pluralize:"дата,даты" }}</small></p>
+                        {% endif %}
+                    {% else %}
+                        <p>Дата уточняется</p>
+                    {% endif %}
+                    <p>Цена: {{ mc.price }} ₽</p>
+                    <a href="{% url 'masterclass_detail' mc.id %}" class="btn btn-primary btn-sm">Подробнее</a>
+                </div>
+            </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<p class="text-center">Пока нет мастер-классов для отображения на главной.</p>
+{% endif %}
+{% endblock %}

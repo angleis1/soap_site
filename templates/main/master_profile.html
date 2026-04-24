@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Профиль мастера {{ master.profile.fio }}{% endblock %}
+{% block extra_head %}
+<style>
+    .master-profile-header {
+        background: linear-gradient(135deg, var(--lavender-light) 0%, #f8f0ff 100%);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        padding: 2rem;
+        text-align: center;
+        border-bottom: 2px solid var(--lavender-medium);
+    }
+    .master-avatar-large {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 6px solid white;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        margin: 0 auto 1.5rem;
+    }
+    .master-avatar-large:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 30px rgba(181, 126, 220, 0.4);
+    }
+    .master-name {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--lavender-dark);
+        margin-bottom: 0.5rem;
+    }
+    .master-role-badge {
+        background: linear-gradient(135deg, var(--lavender-medium), var(--lavender-dark));
+        color: white;
+        padding: 0.4rem 1.5rem;
+        border-radius: 50px;
+        display: inline-block;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 10px rgba(181, 126, 220, 0.3);
+    }
+    .master-contact {
+        background: white;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-top: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+    .master-contact:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+    .master-contact p {
+        margin: 0.5rem 0;
+        font-size: 1.1rem;
+    }
+    .master-contact i {
+        color: var(--lavender-dark);
+        width: 25px;
+        margin-right: 10px;
+    }
+    .btn-lavender {
+        background: linear-gradient(135deg, var(--lavender-medium), var(--lavender-dark));
+        border: none;
+        border-radius: 30px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: var(--transition);
+        box-shadow: 0 4px 10px rgba(181, 126, 220, 0.3);
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-lavender:hover {
+        background: linear-gradient(135deg, var(--lavender-dark), #c7a1ff);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(181, 126, 220, 0.5);
+        color: white;
+    }
+    .master-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.4s ease;
+        height: 100%;
+        background: white;
+    }
+    .master-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-md);
+    }
+    .master-card img {
+        height: 220px;
+        object-fit: cover;
+        width: 100%;
+        transition: transform 0.5s ease;
+    }
+    .master-card:hover img {
+        transform: scale(1.03);
+    }
+    .master-card-body {
+        padding: 1.5rem;
+    }
+    .master-card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--lavender-dark);
+        margin-bottom: 0.5rem;
+    }
+    .master-card-text {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+    .master-card-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--accent-gold);
+    }
+    .master-card-link {
+        color: var(--lavender-dark);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .master-card-link:hover {
+        color: var(--lavender-dark);
+        text-decoration: underline;
+        transform: translateX(5px);
+    }
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease;
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="fade-in-up">
+    <!-- Шапка профиля мастера -->
+    <div class="master-profile-header mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <div class="mb-2">
+                        <strong>Рейтинг:</strong>
+                        <span class="rating-stars ms-2">
+                            {% include "includes/star_rating.html" with rating=avg_rating %}
+                            <span class="ms-1">{{ avg_rating|floatformat:1 }} из 5</span>
+                        </span>
+                        <a href="{% url 'master_reviews' master.id %}" class="btn btn-link btn-sm">Все отзывы ({{ reviews_count }})</a>
+                    </div>
+                    {% if master.profile.avatar %}
+                        <img src="{{ master.profile.avatar.url }}" class="master-avatar-large">
+                    {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="master-avatar-large">
+                    {% endif %}
+                </div>
+                <div class="col-md-8 text-md-start text-center">
+                    <h1 class="master-name">{{ master.profile.fio }}</h1>
+                    <div class="master-role-badge">🧼 Мастер мыловарения</div>
+                    <div class="master-contact">
+                        <p><i class="bi bi-telephone"></i> {{ master.profile.phone }}</p>
+                        <p><i class="bi bi-envelope"></i> {{ master.email }}</p>
+                        <p><i class="bi bi-chat-quote"></i> {{ master.profile.bio|default:"Мастер пока ничего не рассказал о себе." }}</p>
+                    </div>
+                    <a href="{% url 'catalog' %}?master={{ master.id }}" class="btn-lavender mt-3">
+                        🧴 Все мастер-классы мастера
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Заголовок мастер-классов -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="section-title">Мастер-классы мастера</h2>
+        <span class="badge bg-secondary fs-6">Всего: {{ masterclasses.count }}</span>
+    </div>
+
+    <!-- Сетка карточек мастер-классов -->
+    {% if masterclasses %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for mc in masterclasses %}
+                <div class="col">
+                    <div class="master-card">
+                        {% with first_image=mc.images.first %}
+                            {% if first_image %}
+                                <img src="{{ first_image.image.url }}" alt="{{ mc.name }}">
+                            {% else %}
+                                <img src="{% static 'images/no-image.jpg' %}" alt="Нет фото">
+                            {% endif %}
+                        {% endwith %}
+                        <div class="master-card-body">
+                            <h3 class="master-card-title">{{ mc.name }}</h3>
+                            <p class="master-card-text">{{ mc.description|truncatechars:80|safe }}</p>
+                            <p><strong>Дата:</strong> {{ mc.first_session_date|default:"уточняется" }}</p>
+                            <p class="master-card-price">{{ mc.price }} ₽</p>
+                            <a href="{% url 'masterclass_detail' mc.id %}" class="master-card-link">
+                                Подробнее →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            У мастера пока нет опубликованных мастер-классов.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
